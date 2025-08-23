@@ -1,7 +1,7 @@
 package com.lone.loneaicodemother.core.parser;
 
 /**
- * 代码解析器策略接口
+ * 代码解析器策略接口，统一方法的响应参数
  * 
  * @author yupi
  */

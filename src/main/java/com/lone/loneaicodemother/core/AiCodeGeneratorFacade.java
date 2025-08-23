@@ -98,25 +98,26 @@ public class AiCodeGeneratorFacade {
      */
     private Flux<String> generateAndSaveHtmlCodeStream(String userMessage) {
         Flux<String> result = aiCodeGeneratorService.generateHtmlCodeStream(userMessage);
-        // 当流式返回生成代码完成后，再保存代码
-        StringBuilder codeBuilder = new StringBuilder();
-        return result
-                .doOnNext(chunk -> {
-                    // 实时收集代码片段
-                    codeBuilder.append(chunk);
-                })
-                .doOnComplete(() -> {
-                    // 流式返回完成后保存代码
-                    try {
-                        String completeHtmlCode = codeBuilder.toString();
-                        HtmlCodeResult htmlCodeResult = CodeParser.parseHtmlCode(completeHtmlCode);
-                        // 保存代码到文件
-                        File savedDir = CodeFileSaver.saveHtmlCodeResult(htmlCodeResult);
-                        log.info("保存成功，路径为：" + savedDir.getAbsolutePath());
-                    } catch (Exception e) {
-                        log.error("保存失败: {}", e.getMessage());
-                    }
-                });
+//        // 当流式返回生成代码完成后，再保存代码
+//        StringBuilder codeBuilder = new StringBuilder();
+//        return result
+//                .doOnNext(chunk -> {
+//                    // 实时收集代码片段
+//                    codeBuilder.append(chunk);
+//                })
+//                .doOnComplete(() -> {
+//                    // 流式返回完成后保存代码
+//                    try {
+//                        String completeHtmlCode = codeBuilder.toString();
+//                        HtmlCodeResult htmlCodeResult = CodeParser.parseHtmlCode(completeHtmlCode);
+//                        // 保存代码到文件
+//                        File savedDir = CodeFileSaver.saveHtmlCodeResult(htmlCodeResult);
+//                        log.info("保存成功，路径为：" + savedDir.getAbsolutePath());
+//                    } catch (Exception e) {
+//                        log.error("保存失败: {}", e.getMessage());
+//                    }
+//                });
+        return processCodeStream(result, CodeGenTypeEnum.HTML);
     }
 
     /**
@@ -127,29 +128,30 @@ public class AiCodeGeneratorFacade {
      */
     private Flux<String> generateAndSaveMultiFileCodeStream(String userMessage) {
         Flux<String> result = aiCodeGeneratorService.generateMultiFileCodeStream(userMessage);
-        // 当流式返回生成代码完成后，再保存代码
-        StringBuilder codeBuilder = new StringBuilder();
-        return result
-                .doOnNext(chunk -> {
-                    // 实时收集代码片段
-                    codeBuilder.append(chunk);
-                })
-                .doOnComplete(() -> {
-                    // 流式返回完成后保存代码
-                    try {
-                        String completeMultiFileCode = codeBuilder.toString();
-                        MultiFileCodeResult multiFileResult = CodeParser.parseMultiFileCode(completeMultiFileCode);
-                        // 保存代码到文件
-                        File savedDir = CodeFileSaver.saveMultiFileCodeResult(multiFileResult);
-                        log.info("保存成功，路径为：" + savedDir.getAbsolutePath());
-                    } catch (Exception e) {
-                        log.error("保存失败: {}", e.getMessage());
-                    }
-                });
+//        // 当流式返回生成代码完成后，再保存代码
+//        StringBuilder codeBuilder = new StringBuilder();
+//        return result
+//                .doOnNext(chunk -> {
+//                    // 实时收集代码片段
+//                    codeBuilder.append(chunk);
+//                })
+//                .doOnComplete(() -> {
+//                    // 流式返回完成后保存代码
+//                    try {
+//                        String completeMultiFileCode = codeBuilder.toString();
+//                        MultiFileCodeResult multiFileResult = CodeParser.parseMultiFileCode(completeMultiFileCode);
+//                        // 保存代码到文件
+//                        File savedDir = CodeFileSaver.saveMultiFileCodeResult(multiFileResult);
+//                        log.info("保存成功，路径为：" + savedDir.getAbsolutePath());
+//                    } catch (Exception e) {
+//                        log.error("保存失败: {}", e.getMessage());
+//                    }
+//                });
+        return processCodeStream(result, CodeGenTypeEnum.MULTI_FILE);
     }
 
 
-
+ //region 设计模式优化
 
     /**
      * 通用流式代码处理方法
@@ -218,6 +220,7 @@ public class AiCodeGeneratorFacade {
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 Flux<String> codeStream = aiCodeGeneratorService.generateHtmlCodeStream(userMessage);
+                // yield 直接把内层的返回结果作为switch 的返回结果
                 yield processCodeStream(codeStream, CodeGenTypeEnum.HTML);
             }
             case MULTI_FILE -> {
@@ -231,5 +234,5 @@ public class AiCodeGeneratorFacade {
         };
     }
 
-
+    //endregion
 }
