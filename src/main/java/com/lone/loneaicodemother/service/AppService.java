@@ -1,5 +1,6 @@
 package com.lone.loneaicodemother.service;
 
+import com.lone.loneaicodemother.model.dto.app.AppAddRequest;
 import com.lone.loneaicodemother.model.dto.app.AppQueryRequest;
 import com.lone.loneaicodemother.model.entity.User;
 import com.lone.loneaicodemother.model.vo.AppVO;
@@ -17,6 +18,8 @@ import java.util.List;
  */
 public interface AppService extends IService<App> {
 
+    Long createApp(AppAddRequest appAddRequest, User loginUser);
+
     /**
      * 通过聊天生成代码
      */
@@ -26,6 +29,8 @@ public interface AppService extends IService<App> {
      * 部署应用
      */
     String deployApp(Long appId, User loginUser);
+
+    void generateAppScreenshotAsync(Long appId, String appUrl);
 
     AppVO getAppVO(App app);
 
