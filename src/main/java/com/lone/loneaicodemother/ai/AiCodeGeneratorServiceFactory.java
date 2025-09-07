@@ -2,7 +2,7 @@ package com.lone.loneaicodemother.ai;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.lone.loneaicodemother.ai.tools.FileWriteTool;
+import com.lone.loneaicodemother.ai.tools.*;
 import com.lone.loneaicodemother.exception.BusinessException;
 import com.lone.loneaicodemother.exception.ErrorCode;
 import com.lone.loneaicodemother.model.enums.CodeGenTypeEnum;
@@ -41,6 +41,8 @@ public class AiCodeGeneratorServiceFactory {
 
     @Resource
     private StreamingChatModel reasoningStreamingChatModel;
+    @Resource
+    private ToolManager toolManager;
 
     /**
      * 创建ai代码生成器服务
@@ -123,7 +125,7 @@ public class AiCodeGeneratorServiceFactory {
             case VUE_PROJECT -> AiServices.builder(AiCodeGeneratorService.class)
                     .streamingChatModel(reasoningStreamingChatModel)
                     .chatMemoryProvider(memoryId -> chatMemory)
-                    .tools(new FileWriteTool())
+                    .tools(toolManager.getAllTools())
                     .hallucinatedToolNameStrategy(toolExecutionRequest -> ToolExecutionResultMessage.from(
                             toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()
                     ))
