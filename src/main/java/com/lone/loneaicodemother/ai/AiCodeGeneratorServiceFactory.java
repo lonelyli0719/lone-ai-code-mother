@@ -3,6 +3,7 @@ package com.lone.loneaicodemother.ai;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.lone.loneaicodemother.ai.guardrail.PromptSafetyInputGuardrail;
+import com.lone.loneaicodemother.ai.guardrail.RetryOutputGuardrail;
 import com.lone.loneaicodemother.ai.tools.*;
 import com.lone.loneaicodemother.exception.BusinessException;
 import com.lone.loneaicodemother.exception.ErrorCode;
@@ -130,10 +131,13 @@ public class AiCodeGeneratorServiceFactory {
                         .streamingChatModel(reasoningStreamingChatModel)
                         .chatMemoryProvider(memoryId -> chatMemory)
                         .tools(toolManager.getAllTools())
+                        // 处理工具调用幻觉问题
                         .hallucinatedToolNameStrategy(toolExecutionRequest -> ToolExecutionResultMessage.from(
                                 toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()
                         ))
+                        .maxSequentialToolsInvocations(20) // 最多连续调用20次工具
                         .inputGuardrails(new PromptSafetyInputGuardrail())  // 添加输入护轨
+//                        .outputGuardrails(new RetryOutputGuardrail()) // 添加输出护轨（输出护轨会影响流式输出）
                         .build();
             }
             case HTML, MULTI_FILE -> {
@@ -144,6 +148,7 @@ public class AiCodeGeneratorServiceFactory {
                         .streamingChatModel(openAiStreamingChatModel)
                         .chatMemory(chatMemory)
                         .inputGuardrails(new PromptSafetyInputGuardrail())  // 添加输入护轨
+//                        .outputGuardrails(new RetryOutputGuardrail()) // 添加输出护轨（输出护轨会影响流式输出）
                         .build();
             }
             default -> throw new BusinessException(ErrorCode.SYSTEM_ERROR,
