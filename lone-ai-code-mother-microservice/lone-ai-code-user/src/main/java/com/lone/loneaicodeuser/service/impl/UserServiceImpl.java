@@ -3,14 +3,14 @@ package com.lone.loneaicodeuser.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.lone.loneaicodeuser.exception.BusinessException;
-import com.lone.loneaicodeuser.exception.ErrorCode;
+import com.lone.loneaicodemother.exception.BusinessException;
+import com.lone.loneaicodemother.exception.ErrorCode;
 import com.lone.loneaicodeuser.mapper.UserMapper;
-import com.lone.loneaicodeuser.model.dto.user.UserQueryRequest;
-import com.lone.loneaicodeuser.model.entity.User;
-import com.lone.loneaicodeuser.model.enums.UserRoleEnum;
-import com.lone.loneaicodeuser.model.vo.LoginUserVO;
-import com.lone.loneaicodeuser.model.vo.UserVO;
+import com.lone.loneaicodemother.model.dto.user.UserQueryRequest;
+import com.lone.loneaicodemother.model.entity.User;
+import com.lone.loneaicodemother.model.enums.UserRoleEnum;
+import com.lone.loneaicodemother.model.vo.LoginUserVO;
+import com.lone.loneaicodemother.model.vo.UserVO;
 import com.lone.loneaicodeuser.service.UserService;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.lone.loneaicodeuser.constant.UserConstant.USER_LOGIN_STATE;
+import static com.lone.loneaicodemother.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户 服务层实现。

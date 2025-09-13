@@ -1,10 +1,10 @@
 package com.lone.loneaicodeuser.aop;
 
-import com.lone.loneaicodeuser.annotation.AuthCheck;
-import com.lone.loneaicodeuser.exception.BusinessException;
-import com.lone.loneaicodeuser.exception.ErrorCode;
-import com.lone.loneaicodeuser.model.entity.User;
-import com.lone.loneaicodeuser.model.enums.UserRoleEnum;
+import com.lone.loneaicodemother.annotation.AuthCheck;
+import com.lone.loneaicodemother.exception.BusinessException;
+import com.lone.loneaicodemother.exception.ErrorCode;
+import com.lone.loneaicodemother.model.entity.User;
+import com.lone.loneaicodemother.model.enums.UserRoleEnum;
 import com.lone.loneaicodeuser.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;

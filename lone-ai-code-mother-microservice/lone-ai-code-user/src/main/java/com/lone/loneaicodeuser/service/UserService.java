@@ -1,9 +1,9 @@
 package com.lone.loneaicodeuser.service;
 
-import com.lone.loneaicodeuser.model.dto.user.UserQueryRequest;
-import com.lone.loneaicodeuser.model.entity.User;
-import com.lone.loneaicodeuser.model.vo.LoginUserVO;
-import com.lone.loneaicodeuser.model.vo.UserVO;
+import com.lone.loneaicodemother.model.dto.user.UserQueryRequest;
+import com.lone.loneaicodemother.model.entity.User;
+import com.lone.loneaicodemother.model.vo.LoginUserVO;
+import com.lone.loneaicodemother.model.vo.UserVO;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import jakarta.servlet.http.HttpServletRequest;

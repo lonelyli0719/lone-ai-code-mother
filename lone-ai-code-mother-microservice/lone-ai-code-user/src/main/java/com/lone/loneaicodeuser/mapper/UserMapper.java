@@ -1,6 +1,6 @@
 package com.lone.loneaicodeuser.mapper;
 
-import com.lone.loneaicodeuser.model.entity.User;
+import com.lone.loneaicodemother.model.entity.User;
 import com.mybatisflex.core.BaseMapper;
 
 /**
