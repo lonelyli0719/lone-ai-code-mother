@@ -20,12 +20,14 @@ import com.lone.loneaicodemother.ratelimiter.annotation.RateLimit;
 import com.lone.loneaicodemother.ratelimiter.enums.RateLimitType;
 import com.lone.loneaicodemother.service.AppService;
 import com.lone.loneaicodemother.service.ProjectDownloadService;
-import com.lone.loneaicodemother.service.UserService;
+import com.lone.loneaicodemother.innerservice.InnerScreenshotService;
+import com.lone.loneaicodemother.innerservice.InnerUserService;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
@@ -49,8 +51,12 @@ public class AppController {
 
     @Resource
     private AppService appService;
-    @Resource
-    private UserService userService;
+    @DubboReference
+    private InnerUserService userService;
+
+    @DubboReference
+    private InnerScreenshotService screenshotService;
+
     @Resource
     private ProjectDownloadService projectDownloadService;
 
@@ -71,7 +77,7 @@ public class AppController {
         App app = appService.getById(appId);
         ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR, "应用不存在");
         // 3. 权限校验：只有应用创建者可以下载代码
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = InnerUserService.getLoginUser(request);
         if (!app.getUserId().equals(loginUser.getId())) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无权限下载该应用代码");
         }

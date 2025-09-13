@@ -4,10 +4,10 @@ import com.lone.loneaicodemother.exception.BusinessException;
 import com.lone.loneaicodemother.exception.ErrorCode;
 import com.lone.loneaicodemother.model.entity.User;
 import com.lone.loneaicodemother.ratelimiter.annotation.RateLimit;
-import com.lone.loneaicodemother.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -19,7 +19,8 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
+import com.lone.loneaicodemother.innerservice.InnerScreenshotService;
+import com.lone.loneaicodemother.innerservice.InnerUserService;
 import java.lang.reflect.Method;
 import java.time.Duration;
 
@@ -29,8 +30,12 @@ import java.time.Duration;
 public class RateLimitAspect {
     @Resource
     private RedissonClient redissonClient;
-    @Resource
-    private UserService userService;
+    @DubboReference
+    private InnerUserService userService;
+
+    @DubboReference
+    private InnerScreenshotService screenshotService;
+
     @Before("@annotation(rateLimit)")
     public void doBefore(JoinPoint point, RateLimit rateLimit) {
         String key = generateRateLimitKey(point, rateLimit);
@@ -67,7 +72,7 @@ public class RateLimitAspect {
                     ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                     if (attributes != null) {
                         HttpServletRequest request = attributes.getRequest();
-                        User loginUser = userService.getLoginUser(request);
+                        User loginUser = InnerUserService.getLoginUser(request);
                         keyBuilder.append("user:").append(loginUser.getId());
                     } else {
                         // 无法获取请求上下文，使用IP限流

@@ -25,12 +25,13 @@ import com.lone.loneaicodemother.model.vo.AppVO;
 import com.lone.loneaicodemother.model.vo.UserVO;
 import com.lone.loneaicodemother.service.AppService;
 import com.lone.loneaicodemother.service.ChatHistoryService;
-import com.lone.loneaicodemother.service.ScreenshotService;
-import com.lone.loneaicodemother.service.UserService;
+import com.lone.loneaicodemother.innerservice.InnerScreenshotService;
+import com.lone.loneaicodemother.innerservice.InnerUserService;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -42,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 /**
  * 应用 服务层实现。
  *
@@ -51,8 +51,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppService{
-    @Resource
-    private UserService userService;
+
     @Resource
     private AiCodeGeneratorFacade aiCodeGeneratorFacade;
     @Resource
@@ -61,8 +60,12 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
     private StreamHandlerExecutor streamHandlerExecutor;
     @Resource
     VueProjectBuilder vueProjectBuilder;
-    @Resource
-    ScreenshotService screenshotService;
+    @DubboReference
+    private InnerUserService userService;
+
+    @DubboReference
+    private InnerScreenshotService screenshotService;
+
 
 //    @Resource
 //    private AiCodeGenTypeRoutingService aiCodeGenTypeRoutingService;

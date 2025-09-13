@@ -7,6 +7,7 @@ import com.lone.loneaicodemother.model.entity.User;
 import com.lone.loneaicodemother.model.enums.UserRoleEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,13 +15,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import com.lone.loneaicodemother.innerservice.InnerScreenshotService;
+import com.lone.loneaicodemother.innerservice.InnerUserService;
 
 @Aspect
 @Component
 public class AuthInterceptor {
 
-    @Resource
-    private UserService userService;
+    @DubboReference
+    private InnerUserService userService;
+
+    @DubboReference
+    private InnerScreenshotService screenshotService;
+
 
     /**
      * 执行拦截
@@ -34,7 +41,7 @@ public class AuthInterceptor {
         RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         // 当前登录用户
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = InnerUserService.getLoginUser(request);
         UserRoleEnum mustRoleEnum = UserRoleEnum.getEnumByValue(mustRole);
         // 不需要权限，放行
         if (mustRoleEnum == null) {

@@ -10,11 +10,13 @@ import com.lone.loneaicodemother.model.dto.chathistory.ChatHistoryQueryRequest;
 import com.lone.loneaicodemother.model.entity.ChatHistory;
 import com.lone.loneaicodemother.model.entity.User;
 import com.lone.loneaicodemother.service.ChatHistoryService;
-import com.lone.loneaicodemother.service.UserService;
+import com.lone.loneaicodemother.innerservice.InnerScreenshotService;
+import com.lone.loneaicodemother.innerservice.InnerUserService;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -30,8 +32,12 @@ public class ChatHistoryController {
 
     @Resource
     private ChatHistoryService chatHistoryService;
-    @Resource
-    UserService userService;
+    @DubboReference
+    private InnerUserService userService;
+
+    @DubboReference
+    private InnerScreenshotService screenshotService;
+
 
     /**
      * 分页查询某个应用的对话历史（游标查询）
@@ -47,7 +53,7 @@ public class ChatHistoryController {
                                                               @RequestParam(defaultValue = "10") int pageSize,
                                                               @RequestParam(required = false) LocalDateTime lastCreateTime,
                                                               HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = InnerUserService.getLoginUser(request);
         Page<ChatHistory> result = chatHistoryService.listAppChatHistoryByPage(appId, pageSize, lastCreateTime, loginUser);
         return ResultUtils.success(result);
     }
