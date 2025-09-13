@@ -21,6 +21,8 @@ import com.lone.loneaicodemother.model.enums.ChatHistoryMessageTypeEnum;
 import com.lone.loneaicodemother.model.enums.CodeGenTypeEnum;
 import com.lone.loneaicodemother.model.vo.AppVO;
 import com.lone.loneaicodemother.model.vo.UserVO;
+import com.lone.loneaicodemother.monitor.MonitorContext;
+import com.lone.loneaicodemother.monitor.MonitorContextHolder;
 import com.lone.loneaicodemother.service.ChatHistoryService;
 import com.lone.loneaicodemother.service.ScreenshotService;
 import com.lone.loneaicodemother.service.UserService;
@@ -136,10 +138,21 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
 //                    String errorMessage = "AI回复失败: " + error.getMessage();
 //                    chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
 //                });
-        // 6. 调用 AI 生成代码（流式）
+        // 6. 设置监控上下文
+        MonitorContextHolder.setContext(
+                MonitorContext.builder()
+                        .userId(loginUser.getId().toString())
+                        .appId(appId.toString())
+                        .build()
+        );
+        // 7. 调用 AI 生成代码（流式）
         Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
-        // 7. 收集 AI 响应内容并在完成后记录到对话历史
-        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum);
+        // 8. 收集 AI 响应内容并在完成后记录到对话历史
+        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum)
+                .doFinally(signalType -> {
+                    // 流结束时清理（无论成功/失败/取消）
+                    MonitorContextHolder.clearContext();
+                });
     }
 
     @Override
